@@ -94,7 +94,9 @@ class CreateHeap {
         return record;
     }
 
-    private void writePage(DataOutputStream out, byte[] page) {
+    private void writePage(DataOutputStream out, byte[] page) throws Exception {
+        out.write(page);
+        page = new byte[pageSize];
     }
     
 }

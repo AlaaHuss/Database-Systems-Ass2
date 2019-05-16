@@ -8,6 +8,8 @@ public class dbload {
             }else if(args[0].equals("-p")) {
                 int pageSize = Integer.parseInt(args[1]);;
                 String fileName = args[2];
+                CreateHeap h = new CreateHeap(pageSize);
+                h.save(fileName);
             }else{
                 System.out.println("You should input correct parameter.");
                 return;

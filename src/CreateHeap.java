@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 
 class CreateHeap {
@@ -68,12 +70,31 @@ class CreateHeap {
 
     }
 
-    private byte[] createRecord(String[] recordFields) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private byte[] createRecord(String[] data) {
+        byte[] record = new byte[recordSize];
+        int fieldCursor = 0;
+        for (int x = 0; x < data.length; x++) {
+            if (x == 0 || x == 3 || x == 7 || x == 11) {
+                byte[] num = new byte[]{0, 0, 0, 0};
+                try {
+                    num = ByteBuffer.allocate(4).putInt(Integer.parseInt(data[x])).array();
+                } catch (Exception e) {
+                }
+                for (int y = fieldCursor; y < num.length + fieldCursor; y++) {
+                    record[y] = num[y - fieldCursor];
+                }
+            } else { // non integer
+                byte[] bData = data[x].getBytes(StandardCharsets.UTF_8);
+                for (int y = fieldCursor; y < bData.length + fieldCursor; y++) {
+                    record[y] = bData[y - fieldCursor];
+                }
+            }
+            fieldCursor += sizes[x];
+        }
+        return record;
     }
 
     private void writePage(DataOutputStream out, byte[] page) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

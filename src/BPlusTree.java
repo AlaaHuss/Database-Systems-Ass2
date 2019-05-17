@@ -1,3 +1,8 @@
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class BPlusTree<K extends Comparable<? super K>, V> {
     
     /**
@@ -26,18 +31,39 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
     }
 
     private abstract class Node { 
+        List<K> keys;
 
-        public Node() {
-        }
-
-        private void insertValue(K key, V value) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+        abstract void insertValue(K key, V value);
     }
 
-    private static class LeafNode extends Node {
+    private class LeafNode extends Node {
+        
+        List<V> values;
+        LeafNode next;
 
-        public LeafNode() {
+        LeafNode() {
+            keys = new ArrayList<K>();
+            values = new ArrayList<V>();
+        }
+
+        @Override
+        void insertValue(K key, V value) {
+            int loc = Collections.binarySearch(keys, key);
+            int valueIndex = loc >= 0 ? loc : -loc - 1;
+            if (loc >= 0) {
+                values.set(valueIndex, value);
+            } else {
+                keys.add(valueIndex, key);
+                values.add(valueIndex, value);
+            }
+            if (root.isOverflow()) {
+                Node sibling = split();
+                InternalNode newRoot = new InternalNode();
+                newRoot.keys.add(sibling.getFirstLeafKey());
+                newRoot.children.add(this);
+                newRoot.children.add(sibling);
+                root = newRoot;
+            }
         }
     }
     

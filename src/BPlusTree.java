@@ -32,6 +32,10 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
 
     private abstract class Node { 
         List<K> keys;
+        
+        int keyNumber() {
+            return keys.size();
+        }
 
         abstract void insertValue(K key, V value);
         abstract boolean isOverflow();

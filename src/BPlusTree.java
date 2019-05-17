@@ -18,15 +18,20 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         root = new LeafNode();
     }
 
-    void insert(String key, String valueOf) {
+    public void insert(K key, V value) {
+        root.insertValue(key, value);
     }
-
+    
     void writeIndex(int pageSize) {
     }
 
-    private static class Node {
+    private abstract class Node { 
 
         public Node() {
+        }
+
+        private void insertValue(K key, V value) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
 

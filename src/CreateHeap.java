@@ -36,12 +36,14 @@ class CreateHeap {
         byte[] page = new byte[pageSize];
 
         long start = System.currentTimeMillis();
+        BPlusTree<String, String> bpt = new BPlusTree<String, String>(3);
         String line = bi.readLine();
         int rec_num = 0;
         while (line != null) {
 
             String[] recordFields = line.split(",");
             String key = recordFields[0] + " " + recordFields[1];
+            bpt.insert(key,String.valueOf(rec_num));
             rec_num++;
             totalFiles++;
             byte[] record = createRecord(recordFields);
@@ -56,11 +58,12 @@ class CreateHeap {
             line = bi.readLine();
 
             if (currentFile == recordsPerPage || line == null) {
-                writePage(out, page);
+                    writePage(out, page);
                 currentFile = 0;
             }
 
         }
+        bpt.writeIndex(pageSize);
         long finish = System.currentTimeMillis();
         long pages = (long) Math.ceil(((double) totalFiles * (double) recordSize) / (double) pageSize);
         System.out.println("Pages = " + (pages));

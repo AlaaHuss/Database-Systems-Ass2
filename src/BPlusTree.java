@@ -76,6 +76,17 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
             int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
             return children.get(childIndex);
         }
+        
+        void insertChild(K key, Node child) {
+            int loc = Collections.binarySearch(keys, key);
+            int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
+            if (loc >= 0) {
+                    children.set(childIndex, child);
+            } else {
+                    keys.add(childIndex, key);
+                    children.add(childIndex + 1, child);
+            }
+        }
     }
 
     private class LeafNode extends Node {

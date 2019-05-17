@@ -70,6 +70,12 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         K getFirstLeafKey() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+        
+        Node getChild(K key) {
+            int loc = Collections.binarySearch(keys, key);
+            int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
+            return children.get(childIndex);
+        }
     }
 
     private class LeafNode extends Node {

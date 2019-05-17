@@ -30,6 +30,35 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
     void writeIndex(int pageSize) {
     }
 
+    private class InternalNode extends Node {
+        List<Node> children;
+
+        InternalNode() {
+            this.keys = new ArrayList<K>();
+            this.children = new ArrayList<Node>();
+        }
+
+        @Override
+        void insertValue(K key, V value) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        boolean isOverflow() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        Node split() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        K getFirstLeafKey() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+    }
+
     private abstract class Node { 
         List<K> keys;
         
@@ -40,6 +69,7 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         abstract void insertValue(K key, V value);
         abstract boolean isOverflow();
         abstract Node split();
+        abstract K getFirstLeafKey();
     }
 
     private class LeafNode extends Node {
@@ -90,6 +120,11 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         @Override
         boolean isOverflow() {
             return values.size() > branchingFactor - 1;
+        }
+        
+        @Override
+        K getFirstLeafKey() {
+            return keys.get(0);
         }
     }
     

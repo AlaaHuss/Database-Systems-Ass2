@@ -40,7 +40,20 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
 
         @Override
         void insertValue(K key, V value) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            Node child = getChild(key);
+            child.insertValue(key, value);
+            if (child.isOverflow()) {
+                Node sibling = child.split();
+                insertChild(sibling.getFirstLeafKey(), sibling);
+            }
+            if (root.isOverflow()) {
+                Node sibling = split();
+                InternalNode newRoot = new InternalNode();
+                newRoot.keys.add(sibling.getFirstLeafKey());
+                newRoot.children.add(this);
+                newRoot.children.add(sibling);
+                root = newRoot;
+            }
         }
 
         @Override
@@ -57,19 +70,6 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         K getFirstLeafKey() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
-
-    private abstract class Node { 
-        List<K> keys;
-        
-        int keyNumber() {
-            return keys.size();
-        }
-
-        abstract void insertValue(K key, V value);
-        abstract boolean isOverflow();
-        abstract Node split();
-        abstract K getFirstLeafKey();
     }
 
     private class LeafNode extends Node {
@@ -126,6 +126,19 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         K getFirstLeafKey() {
             return keys.get(0);
         }
+    }
+    
+    private abstract class Node { 
+        List<K> keys;
+        
+        int keyNumber() {
+            return keys.size();
+        }
+
+        abstract void insertValue(K key, V value);
+        abstract boolean isOverflow();
+        abstract Node split();
+        abstract K getFirstLeafKey();
     }
     
 }

@@ -34,6 +34,7 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         List<K> keys;
 
         abstract void insertValue(K key, V value);
+        abstract boolean isOverflow();
     }
 
     private class LeafNode extends Node {
@@ -64,6 +65,11 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
                 newRoot.children.add(sibling);
                 root = newRoot;
             }
+        }
+        
+        @Override
+        boolean isOverflow() {
+            return values.size() > branchingFactor - 1;
         }
     }
     

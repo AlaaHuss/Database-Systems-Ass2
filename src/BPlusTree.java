@@ -63,7 +63,15 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
 
         @Override
         Node split() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            int from = keyNumber() / 2 + 1, to = keyNumber();
+            InternalNode sibling = new InternalNode();
+            sibling.keys.addAll(keys.subList(from, to));
+            sibling.children.addAll(children.subList(from, to + 1));
+
+            keys.subList(from - 1, to).clear();
+            children.subList(from, to + 1).clear();
+
+            return sibling;
         }
 
         @Override

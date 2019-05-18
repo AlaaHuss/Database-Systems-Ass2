@@ -1,11 +1,14 @@
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
@@ -102,7 +105,21 @@ class CreateHeap {
         page = new byte[pageSize];
     }
 
-    void readFile(String txt) {
+    public void readFile(String txt) {
+        DataInputStream in = new DataInputStream(new FileInputStream("index." + pageSize));
+        int index = 0;
+        int subindex = 0;
+        String line = "";
+        long start = System.currentTimeMillis();
+        boolean search_done = false;
+        int result = 0;
+        LineNumberReader reader = new LineNumberReader(new FileReader(new File("index." + pageSize)));
+        while ((reader.readLine()) != null);
+        int countofline = reader.getLineNumber();
+        
+        long end = System.currentTimeMillis();
+
+        System.out.println("\nTime (ms) = " + (end - start));
     }
     
 }

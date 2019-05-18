@@ -76,7 +76,7 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
 
         @Override
         K getFirstLeafKey() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return children.get(0).getFirstLeafKey();
         }
         
         Node getChild(K key) {

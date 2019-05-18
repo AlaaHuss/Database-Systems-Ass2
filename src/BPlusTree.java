@@ -1,7 +1,14 @@
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class BPlusTree<K extends Comparable<? super K>, V> {
     
@@ -27,7 +34,43 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         root.insertValue(key, value);
     }
     
-    void writeIndex(int pageSize) {
+    public void writeIndex(int pagesize) throws IOException {
+        PrintWriter indexoutFile = new PrintWriter(new FileWriter("index." + pagesize));
+        Queue<List<Node>> queue = new LinkedList<List<Node>>();
+        queue.add(Arrays.asList(root));
+        int no = 1;
+        while (!queue.isEmpty()) {
+            Queue<List<Node>> nextQueue = new LinkedList<List<Node>>();
+            while (!queue.isEmpty()) {
+                List<Node> nodes = queue.remove();
+                indexoutFile.write('{');
+                Iterator<Node> it = nodes.iterator();
+                while (it.hasNext()) {
+                        Node node = it.next();
+                        if(node.toString().indexOf(",") > 0){
+                            String[] temp = node.toString().substring(1, node.toString().length() - 1).split(", ");
+                            indexoutFile.write(no + "#" + node.toString() + "#");
+                            for(int i = 0;i < temp.length; i++){
+                                indexoutFile.write((String) node.getValue((K) temp[i]));
+                                if(i != temp.length - 1){
+                                    indexoutFile.write(",");
+                                }
+                            }
+                        }else{
+                            indexoutFile.write(no + "#" + node.toString() + "#" + node.getValue((K) node.toString().substring(1, node.toString().length()-1)));
+                        }
+                        no++;
+                        if (it.hasNext())
+                                indexoutFile.write("___");
+                        if (node instanceof BPlusTree.InternalNode)
+                                nextQueue.add(((InternalNode) node).children);
+                }
+                indexoutFile.write('}');
+                indexoutFile.write("\n");
+            }
+            queue = nextQueue;
+        }
+        indexoutFile.close();
     }
 
     private class InternalNode extends Node {

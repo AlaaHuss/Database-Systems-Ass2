@@ -101,5 +101,8 @@ class CreateHeap {
         out.write(page);
         page = new byte[pageSize];
     }
+
+    void readFile(String txt) {
+    }
     
 }

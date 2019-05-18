@@ -10,6 +10,8 @@ public class dbquery {
             int pageSize = Integer.parseInt(args[1]);
 
             CreateHeap h = new CreateHeap(pageSize);
+            
+            h.readFile(txt);
 
 	}
 

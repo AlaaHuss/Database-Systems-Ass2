@@ -138,6 +138,11 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
                     children.add(childIndex + 1, child);
             }
         }
+        
+        @Override
+        V getValue(K key) {
+            return getChild(key).getValue(key);
+        }
     }
 
     private class LeafNode extends Node {
@@ -194,6 +199,12 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         K getFirstLeafKey() {
             return keys.get(0);
         }
+        
+        @Override
+        V getValue(K key) {
+            int loc = Collections.binarySearch(keys, key);
+            return loc >= 0 ? values.get(loc) : null;
+        }
     }
     
     private abstract class Node { 
@@ -207,6 +218,7 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         abstract boolean isOverflow();
         abstract Node split();
         abstract K getFirstLeafKey();
+        abstract V getValue(K key);
     }
     
 }

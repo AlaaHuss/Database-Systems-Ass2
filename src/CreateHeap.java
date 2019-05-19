@@ -5,12 +5,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 
 class CreateHeap {
@@ -105,7 +110,7 @@ class CreateHeap {
         page = new byte[pageSize];
     }
 
-    public void readFile(String txt) {
+    public void readFile(String txt) throws FileNotFoundException, IOException {
         DataInputStream in = new DataInputStream(new FileInputStream("index." + pageSize));
         int index = 0;
         int subindex = 0;
@@ -116,7 +121,52 @@ class CreateHeap {
         LineNumberReader reader = new LineNumberReader(new FileReader(new File("index." + pageSize)));
         while ((reader.readLine()) != null);
         int countofline = reader.getLineNumber();
-        
+        while(!search_done){
+            try (Stream<String> lines = Files.lines(Paths.get("index." + String.valueOf(pageSize)))){
+                line = lines.skip(index).findFirst().get();
+                line = line.substring(1, line.length() - 1);
+                String subline = "";
+                if(line.indexOf("___") > 0){
+                    subline = line.split("___")[subindex];
+                }else{
+                    subline = line;
+                }
+                String[] tempNode = subline.split("#");
+                index = Integer.parseInt(tempNode[0]);
+                if(index > countofline){
+                    search_done = true;
+                }
+                String node = tempNode[1].substring(1, tempNode[1].length() - 1);
+                if(node.indexOf(", ") > 0){
+                    String[] subnode = node.split(", ");
+                    if(txt.compareTo(subnode[subnode.length - 1]) > 0){
+                        subindex = subnode.length;
+                    }else{
+                        for(int i = 0; i < subnode.length; i++){
+                            if(txt.compareTo(subnode[i]) < 0){
+                                subindex = i;
+                                break;
+                            }
+                            if(search_done && txt.equals(subnode[i])){
+                                result = Integer.parseInt(tempNode[2].split(",")[i]);
+                            }
+                        }
+                    }
+                }else{
+                    if(txt.compareTo(node) < 0){
+                        subindex = 0;
+                    }else{
+                        subindex = 1;
+                    }
+                    if(search_done && txt.equals(node)){
+                        result = Integer.parseInt(tempNode[2]);
+                    }
+                }
+            }catch(Exception e){
+                System.out.println("File Error!!!");
+                search_done = true;
+            }
+        }
         long end = System.currentTimeMillis();
 
         System.out.println("\nTime (ms) = " + (end - start));

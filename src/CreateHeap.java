@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
@@ -166,6 +167,41 @@ class CreateHeap {
                 System.out.println("File Error!!!");
                 search_done = true;
             }
+        }
+        
+        int recordsPerPage = pageSize / recordSize;
+        try(InputStream heap = new FileInputStream("heap." + pageSize)){
+            int offset = (result / recordsPerPage) * pageSize;
+            offset += (result % recordsPerPage) * recordSize;
+            heap.skip(offset);
+            int c;
+            for(int ind = 0;ind < 13;ind++){
+                if(ind == 0 || ind == 3 || ind == 7 || ind == 11){
+                    String int_con = "";
+                    for(int i = 0; i < sizes[ind]; i++){   
+                        c = heap.read();
+                        if(c==0){
+                            int_con += "00";
+                        }else{
+                            if(Integer.toHexString(c).length() == 1){
+                                int_con += "0" + Integer.toHexString(c);
+                            }else{
+                                int_con += Integer.toHexString(c);
+                            }
+                        }
+                    }
+                    System.out.print(Integer.parseInt(int_con,16));
+                }else{
+                    for(int i = 0; i < sizes[ind]; i++){
+                        c = heap.read();
+                       System.out.print(Character.toString((char) c));
+                    }
+                }
+                System.out.println("");
+            }
+            System.out.println();
+        }catch(FileNotFoundException e){
+            System.out.println("Can not Find File!!!");
         }
         long end = System.currentTimeMillis();
 

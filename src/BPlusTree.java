@@ -1,4 +1,6 @@
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -65,8 +67,8 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         return sb.toString();
     }
     
-    public void writeIndex(int pagesize) throws IOException {
-        PrintWriter indexoutFile = new PrintWriter(new FileWriter("index." + pagesize));
+    public void writeIndex(int pagesize,int tree_no) throws IOException {
+        PrintWriter indexoutFile = new PrintWriter(new FileWriter("index" + tree_no + "." + pagesize));
         Queue<List<Node>> queue = new LinkedList<List<Node>>();
         queue.add(Arrays.asList(root));
         int no = 1;
@@ -82,7 +84,7 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
                             String[] temp = node.toString().substring(1, node.toString().length() - 1).split(", ");
                             indexoutFile.write(no + "#" + node.toString() + "#");
                             for(int i = 0;i < temp.length; i++){
-                                indexoutFile.write((String) node.getValue((K) temp[i]));
+                                indexoutFile.write((String) node.getValue((K) temp[i].toString()));
                                 if(i != temp.length - 1){
                                     indexoutFile.write(",");
                                 }
@@ -103,6 +105,7 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         }
         indexoutFile.close();
     }
+
 
     private class InternalNode extends Node {
         List<Node> children;

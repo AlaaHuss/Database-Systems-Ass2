@@ -24,18 +24,25 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
     * The root node of the B+ tree.
     */
    private Node root;
-
+    /**
+    *   construct of B+ tree.
+    */
     public BPlusTree(int branchingFactor) {
         if (branchingFactor <= 2)
             throw new IllegalArgumentException("Illegal branching factor: " + branchingFactor);
         this.branchingFactor = branchingFactor;
         root = new LeafNode();
     }
-
+    /**
+    *   insert method of B+ tree.
+    */
     public void insert(K key, V value) {
         root.insertValue(key, value);
     }
     
+    /**
+    *   toString method to get string value of B+ tree.
+    */
     public String toString() {
         Queue<List<Node>> queue = new LinkedList<List<Node>>();
         queue.add(Arrays.asList(root));
@@ -66,7 +73,9 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
 
         return sb.toString();
     }
-    
+    /**
+    *   writeIndex method to make index file of B+ tree.
+    */
     public void writeIndex(int pagesize,int tree_no) throws IOException {
         PrintWriter indexoutFile = new PrintWriter(new FileWriter("index" + tree_no + "." + pagesize));
         Queue<List<Node>> queue = new LinkedList<List<Node>>();
@@ -106,7 +115,9 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
         indexoutFile.close();
     }
 
-
+    /**
+    *   InternalNode class of B+ tree.
+    */
     private class InternalNode extends Node {
         List<Node> children;
 

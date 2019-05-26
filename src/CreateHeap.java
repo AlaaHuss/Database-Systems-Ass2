@@ -115,7 +115,6 @@ class CreateHeap {
     }
 
     public void readFile(String txt) throws FileNotFoundException, IOException {
-        //DataInputStream in = new DataInputStream(new FileInputStream("index." + pageSize));
         int index = 0;
         int subindex = 0;
         String line = "";
@@ -124,14 +123,14 @@ class CreateHeap {
         int result = -1;
         
         int resultcnt = 0;
-        for(int pg = 0; pg < 10; pg++){
-            LineNumberReader reader = new LineNumberReader(new FileReader(new File("index" + pg + "." + pageSize)));
+        for(int pg = 0; pg < 10; pg++){     //index file 0 - 9
+            LineNumberReader reader = new LineNumberReader(new FileReader(new File("index" + pg + "." + pageSize)));//read a index file
             while ((reader.readLine()) != null);
-            int countofline = reader.getLineNumber();
-            while(!search_done){
+            int countofline = reader.getLineNumber();   //get line of index file
+            while(!search_done){                        
                 try {
-                    Stream<String> lines = Files.lines(Paths.get("index" + pg + "." + String.valueOf(pageSize)));
-                    line = lines.skip(index).findFirst().get();
+                    Stream<String> lines = Files.lines(Paths.get("index" + pg + "." + String.valueOf(pageSize)));//read a index file
+                    line = lines.skip(index).findFirst().get();         //read index line of index file
                     line = line.substring(1, line.length() - 1);
                     String subline = "";
                     if(line.indexOf("___") > 0){

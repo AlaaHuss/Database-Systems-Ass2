@@ -120,12 +120,16 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
     */
     private class InternalNode extends Node {
         List<Node> children;
-
+        /**
+        *   construct of InternalNode class.
+        */
         InternalNode() {
             this.keys = new ArrayList<K>();
             this.children = new ArrayList<Node>();
         }
-
+        /**
+        *   insertValue method to insert value to internal node in InternalNode class
+        */
         @Override
         void insertValue(K key, V value) {
             Node child = getChild(key);
@@ -143,12 +147,16 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
                 root = newRoot;
             }
         }
-
+        /**
+        *   isOverflow method to check overflow in InternalNode class
+        */
         @Override
         boolean isOverflow() {
             return children.size() > branchingFactor;
         }
-
+        /**
+        *   split method in InternalNode class
+        */
         @Override
         Node split() {
             int from = keyNumber() / 2 + 1, to = keyNumber();
@@ -161,18 +169,24 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
 
             return sibling;
         }
-
+        /**
+        *   getFirstLeafKey method to get first leaf key in InternalNode class
+        */
         @Override
         K getFirstLeafKey() {
             return children.get(0).getFirstLeafKey();
         }
-        
+        /**
+        *   getChild method to get child with key in InternalNode class
+        */
         Node getChild(K key) {
             int loc = Collections.binarySearch(keys, key);
             int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
             return children.get(childIndex);
         }
-        
+        /**
+        *   insertChild method to insert child in InternalNode class
+        */
         void insertChild(K key, Node child) {
             int loc = Collections.binarySearch(keys, key);
             int childIndex = loc >= 0 ? loc + 1 : -loc - 1;
@@ -183,23 +197,31 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
                     children.add(childIndex + 1, child);
             }
         }
-        
+        /**
+        *   getValue method to get value with key in InternalNode class
+        */
         @Override
         V getValue(K key) {
             return getChild(key).getValue(key);
         }
     }
-
+    /**
+    *   LeafNode class of B+ tree
+    */
     private class LeafNode extends Node {
         
         List<V> values;
         LeafNode next;
-
+        /**
+        *  construct of LeafNode class
+        */
         LeafNode() {
             keys = new ArrayList<K>();
             values = new ArrayList<V>();
         }
-
+        /**
+        *  insertValue method to insert key and value in LeafNode class
+        */
         @Override
         void insertValue(K key, V value) {
             int loc = Collections.binarySearch(keys, key);
@@ -219,7 +241,9 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
                 root = newRoot;
             }
         }
-        
+        /**
+        *  insertValue method to split key in LeafNode class
+        */
         @Override
         Node split() {
             LeafNode sibling = new LeafNode();
@@ -234,24 +258,32 @@ public class BPlusTree<K extends Comparable<? super K>, V> {
             next = sibling;
             return sibling;
         }
-        
+        /**
+        *  isOverflow method to check overflow in LeafNode class
+        */
         @Override
         boolean isOverflow() {
             return values.size() > branchingFactor - 1;
         }
-        
+        /**
+        *  getFirstLeafKey method to get first leaf key in LeafNode class
+        */
         @Override
         K getFirstLeafKey() {
             return keys.get(0);
         }
-        
+        /**
+        *  getValue method to get value with key in LeafNode class
+        */
         @Override
         V getValue(K key) {
             int loc = Collections.binarySearch(keys, key);
             return loc >= 0 ? values.get(loc) : null;
         }
     }
-    
+    /**
+    *  Node class is abstract class for b+ tree
+    */
     private abstract class Node { 
         List<K> keys;
         

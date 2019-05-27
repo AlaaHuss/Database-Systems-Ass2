@@ -113,7 +113,17 @@ class CreateHeap {
         out.write(page);
         page = new byte[pageSize];
     }
-
+    /**
+        index file
+        {children index(line)#[keys]#value(line of heap file)}
+        {1#[18443 06/12/2017 11:31:58 AM, 19563 10/11/2017 03:31:27 PM]#4,17}
+        {2#[17988 08/28/2017 12:39:48 PM]#9___3#[18972 09/04/2017 01:54:16 PM]#16___4#[20542 03/04/2017 02:51:27 AM]#82}
+        {5#[17425 05/08/2017 05:39:12 PM, 17745 07/11/2017 11:34:48 PM]#15,36___6#[18222 03/14/2017 09:41:21 PM]#47}
+        {7#[18663 05/31/2017 06:53:26 AM]#495___8#[19206 06/15/2017 01:15:04 PM]#205}
+        {9#[19985 11/16/2017 10:38:34 AM]#27___10#[21153 10/21/2017 11:38:40 AM, 21595 07/15/2017 01:18:10 PM]#42,22}
+        {11#[17293 09/18/2017 08:29:19 AM]#392___12#[17623 12/17/2017 06:30:00 PM]#192___13#[17854 07/11/2017 06:20:35 PM]#11}
+        ...............................................
+    */
     public void readFile(String txt) throws FileNotFoundException, IOException {
         int index = 0;
         int subindex = 0;
@@ -131,42 +141,42 @@ class CreateHeap {
                 try {
                     Stream<String> lines = Files.lines(Paths.get("index" + pg + "." + String.valueOf(pageSize)));//read a index file
                     line = lines.skip(index).findFirst().get();         //read index line of index file
-                    line = line.substring(1, line.length() - 1);
-                    String subline = "";
-                    if(line.indexOf("___") > 0){
-                        subline = line.split("___")[subindex];
+                    line = line.substring(1, line.length() - 1);        //get line without {} like this {1#[18443 06/12/2017 11:31:58 AM, 19563 10/11/2017 03:31:27 PM]#4,17} - > 1#[18443 06/12/2017 11:31:58 AM, 19563 10/11/2017 03:31:27 PM]#4,17
+                    String subline = "";                                
+                    if(line.indexOf("___") > 0){                        //if the child node has more than two nodes
+                        subline = line.split("___")[subindex];          //to get child node
                     }else{
-                        subline = line;
+                        subline = line;                                 //to get child node
                     }
-                    String[] tempNode = subline.split("#");
-                    index = Integer.parseInt(tempNode[0]);
-                    if(index > countofline){
-                        search_done = true;
-                    }
-                    String node = tempNode[1].substring(1, tempNode[1].length() - 1);
-                    if(node.indexOf(", ") > 0){
+                    String[] tempNode = subline.split("#");             //to split index of child,keys and value
+                    index = Integer.parseInt(tempNode[0]);              //index of child(line of child)
+                    if(index > countofline){                            //if index of child > lines of index file
+                        search_done = true;                             //end of search
+                    }                                                                   
+                    String node = tempNode[1].substring(1, tempNode[1].length() - 1);   //get keys
+                    if(node.indexOf(", ") > 0){                                     //if there are more than two keys
                         String[] subnode = node.split(", ");
-                        if(txt.compareTo(subnode[subnode.length - 1]) > 0){
-                            subindex = subnode.length;
-                        }else{
-                            for(int i = 0; i < subnode.length; i++){
-                                if(txt.compareTo(subnode[i]) < 0){
+                        if(txt.compareTo(subnode[subnode.length - 1]) > 0){         //if search text > last key    
+                            subindex = subnode.length;                              //child node of this is last node in children
+                        }else{                                                      //if search text < last key
+                            for(int i = 0; i < subnode.length; i++){                //to find child node of this in children
+                                if(txt.compareTo(subnode[i]) < 0){              
                                     subindex = i;
                                     break;
                                 }
-                                if(search_done && txt.equals(subnode[i])){
-                                    result = Integer.parseInt(tempNode[2].split(",")[i]);
+                                if(search_done && txt.equals(subnode[i])){          //if the search text is same with child node 
+                                    result = Integer.parseInt(tempNode[2].split(",")[i]);   //result is value(line of heap file) of key
                                 }
                             }
                         }
                     }else{
-                        if(txt.compareTo(node) < 0){
-                            subindex = 0;
+                        if(txt.compareTo(node) < 0){                    //if search text < node
+                            subindex = 0;                               
                         }else{
                             subindex = 1;
                         }
                         if(search_done && txt.equals(node)){
-                            result = Integer.parseInt(tempNode[2]);
+                            result = Integer.parseInt(tempNode[2]);         //result is value(line of heap file) of key
                         }
                     }
                 }catch(Exception e){
@@ -177,17 +187,17 @@ class CreateHeap {
             }
             
             int recordsPerPage = pageSize / recordSize;
-            if(result == -1 ){
+            if(result == -1 ){                              //if there is no result in this index file
                 resultcnt++;
                 
             }else{
-                try(InputStream heap = new FileInputStream("heap." + pageSize)){
+                try(InputStream heap = new FileInputStream("heap." + pageSize)){        //read heap file
 
-                    int offset = (result / recordsPerPage) * pageSize;
+                    int offset = (result / recordsPerPage) * pageSize;              //to get offest in heap file with result of index file 
                     offset += (result % recordsPerPage) * recordSize;
-                    heap.skip(offset);
+                    heap.skip(offset);                                              //to skip offset
                     int c;
-                    for(int ind = 0;ind < 13;ind++){
+                    for(int ind = 0;ind < 13;ind++){                                // to get result of record in heap file
                         if(ind == 0 || ind == 3 || ind == 7 || ind == 11){
                             String int_con = "";
                             for(int i = 0; i < sizes[ind]; i++){   
@@ -219,8 +229,8 @@ class CreateHeap {
             search_done = false;
             index = 0;
             result = -1;
-        }
-        if(resultcnt == 10){
+        }   
+        if(resultcnt == 10){                                //if there is no result of all index file. 
             System.out.println("There is no results.");
         }
         long end = System.currentTimeMillis();
